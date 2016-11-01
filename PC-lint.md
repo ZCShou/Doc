@@ -5,11 +5,11 @@ C/C++的静态检查工具主要有PC-lint、Coverity、Fortify等，后面两�
 PC-Lint9出来也老长时间了。
 ## 0x02、PC-lint安装
 PC-Lint[官网](http://www.gimpel.com/)为http://www.gimpel.com/ ，这货是收费的，需要购买下载。下载后解压后如下图：
- 
+![解压后图片](https://github.com/ZCShou/Docs/tree/master/images/PC-lint/files.png) 
 一路next即可。安装最后会询问是否进行其他配置，暂时不用配置即可！。
-PC-Lint等升级稍微麻烦点，需要命令行执行响应的命令。进入官网，http://www.gimpel.com/html/ptch90.htm，可以看到提供的升级包，升级包需要使用官方提供的工具lpatch升级。升级方式如下：
+PC-Lint的升级稍微麻烦点，需要命令行执行相应的命令。进入官网，http://www.gimpel.com/html/ptch90.htm，可以看到提供的升级包，升级包需要使用官方提供的工具lpatch升级。升级方式如下：
 （1）下载官方的升级包和lpatch工具
- 
+![解压后图片](https://github.com/ZCShou/Docs/tree/master/images/PC-lint/updates_files.png) 
 （2）更新前先查看当前版本
  
 将下载的文件放到一个目录中，启动cmd
