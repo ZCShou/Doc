@@ -11,7 +11,7 @@ PC-Lint官网为http://www.gimpel.com/ ，这货是收费的，需要购买下�
 PC-Lint等升级稍微麻烦点，需要命令行执行响应的命令。进入官网，http://www.gimpel.com/html/ptch90.htm，可以看到提供的升级包，升级包需要使用官方提供的工具lpatch升级。升级方式如下：
 ##下载官方的升级包和lpatch工具
 <p align="center">
-  <img alt="解压图" src="Docs/images/PC-lint/updates_files.png">
+  <img alt="解压图" src="https://github.com/ZCShou/Docs/blob/master/images/PC-lint/files.png">
 </p>
 ##更新前先查看当前版本
 <p align="center">
