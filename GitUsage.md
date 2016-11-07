@@ -65,6 +65,31 @@ $ git config --global merge.tool vimdiff
 
 　　本地仓库相对比较简单，新建立一个文件夹，git bash到 新建的文件中，执行 `git init` 即可。这样，在当前目录下，回生成一个名为.git的隐藏文件夹，git的所有东西就存在该文件夹中。
 
+## Git 基本操作
+### Git 查看日志
+　　使用 `git log` 命令列出历史提交记录如下:
+
+![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log.png)
+
+　　也可以使用 `git log --oneline` 命令列出历史提交记录的精简版，如下：
+
+![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log_oneline.png)
+
+　　使用 `git log --graph` 命令查看历史中什么时候出现了分支、合并
+```bash
+git log --oneline --graph
+```
+
+　　如果只想查找指定用户的提交日志可以使用命令：git log --author=xxx
+```bash
+git log --author=Linus --oneline -5
+```
+
+　　如果你要指定日期，可以执行几个选项：--since 和 --before，但是你也可以用 --until 和 --after,如下：
+```bash
+git log --oneline --before={3.weeks.ago} --after={2010-04-18} --no-merges
+```
+
 ## Git 使用远程仓库
 
 　　略
