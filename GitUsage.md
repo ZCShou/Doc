@@ -63,7 +63,7 @@ $ git config --global merge.tool vimdiff
 
 ## Git 本地仓库
 
-　　略
+　　本地仓库相对比较简单，新建立一个文件夹，git bash到 新建的文件中，执行 `git init` 即可。这样，在当前目录下，回生成一个名为.git的隐藏文件夹，git的所有东西就存在该文件夹中。
 
 ## Git 使用远程仓库
 
