@@ -73,5 +73,6 @@ $ git config --global merge.tool vimdiff
 　　以下是几个比较好的Git学习网站，特此记录以下
 * http://www.runoob.com/git/git-tutorial.html
 * http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000
+* http://www.yanyaozhen.com/category/git/
 
 
