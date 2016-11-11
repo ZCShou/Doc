@@ -30,6 +30,13 @@ $ git config --global core.editor Code-Insiders.exe
 ``` bash
 $ git config --global merge.tool vimdiff
 ```
+### Git 内容推送
+　　不带任何参数的git push，默认只推送当前分支，这叫做simple方式。此外，还有一种matching方式，会推送所有有对应的远程分支的本地分支。Git 2.0版本之前，默认采用matching方法，现在改为默认采用simple方式。如果要修改这个设置，可以采用git config命令。
+``` bash
+$ git config --global push.default matching
+# 或者
+$ git config --global push.default simple
+```
 　　配置完成后，就可以开启Git的使用之旅了。
 
 > Git 提供了一个叫做 git config 的工具，专门用来配置或读取相应的工作环境变量。这些环境变量，决定了 Git 在各个环节的具体工作方式和行为。这些变量可以存放在以下三个不同的地方：
@@ -57,7 +64,7 @@ $ git config --global merge.tool vimdiff
 * **版本库**：工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。
 
 　　下面这个图展示了工作区、版本库中的暂存区和版本库之间的关系：
-![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git-process.png)
+![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git-works.png)
 
 　　关于这部分，可以到这个网站查看，作者已经写得非常详细了 http://www.runoob.com/git/git-workspace-index-repo.html
 
@@ -66,6 +73,27 @@ $ git config --global merge.tool vimdiff
 　　本地仓库相对比较简单，新建立一个文件夹，git bash到 新建的文件中，执行 `git init` 即可。这样，在当前目录下，回生成一个名为.git的隐藏文件夹，git的所有东西就存在该文件夹中。
 
 ## Git 基本操作
+### Git 新增文件
+　　使用 `git add` 命令将新文件提交到git，让git管理该文件:
+```bash
+格式：$ git add <参数>  文件名          # 文件名支持通配符
+
+注意几个参数的区别：
+　　$ git add .   # 监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件
+　　$ git add -u   # 仅监控已经被add的文件（即tracked file），他会将被修改的文件提交到暂存区。add -u 不会提交新文件（untracked file）
+　　$ git add -A   # 是上面两个功能的合集
+
+```
+
+### Git 提交修改
+　　使用 `git commit` 命令修改提交到Git:
+```bash
+格式：$ git commit <参数> <-F file/ -m "msg" ...>
+
+注意几个参数的区别：
+　　$ git commit -m    # 提交说明。不用-m参数的话，git将调到一个文本编译器（通常是vim）来让你输入提交的描述信息
+　　$ git commit -a   # -a 选项可只将所有被修改或者已删除的且已经被git管理的文档提交倒仓库中。如果只是修改或者删除了已被Git 管理的文档，是没必要使用git add 命令的。
+```
 ### Git 查看日志
 　　使用 `git log` 命令列出历史提交记录如下:
 
@@ -92,24 +120,78 @@ git log --oneline --before={3.weeks.ago} --after={2010-04-18} --no-merges
 
 ## Git 使用远程仓库
 
-　　Git中从远程的分支获取最新的版本到本地有这样2个命令 `git fetch` 和 `git pull` ：
+　　1. 将本地仓库(有无内容均可)与已有的一个***空的***远程仓库进行关联。可以直接执行以下命令：
+```bash
+git remote add [shortname] [url]            # shortname 为远程仓库的简称，后续命令可以直接使用该简称，默认为origin
+# 例如：
+git remote add Docs git@github.com:ZCShou/Docs.git           # Docs 为远程仓库git@github.com:ZCShou/Docs.git的简称，
+```
+　　在关联之后，可以使用 `git remote` 进行查看当前关联的远程仓库
 
-　　`git pull` 命令的作用是，取回远程主机某个分支的更新，再与本地的指定分支合并。它的完整格式稍稍有点复杂.
 ```bash
-git pull <远程主机名> <远程分支名>:<本地分支名>
+$ git remote
+Docs
+$ git remote -v
+Docs    git@github.com:ZCShou/Docs.git (fetch)
+Docs    git@github.com:ZCShou/Docs.git (push)
 ```
-　　例如，取回origin主机的next分支，与本地的master分支合并，需要写成下面这样：
-```bash
-git pull origin next:master
-```
-　　如果远程分支是与当前分支合并，则冒号后面的部分可以省略。
+　　2. 如果我们已有不空的远程仓库，或者说，想要直接获取别人的仓库
 
-　　`git fetch` 相当于是从远程获取最新版本到本地，不会自动merge,上面的命令等同于：
+　　接下来，就可以把本地库的所有内容推送到远程库上（将本地的master分支推送到Docs仓库）：
 ```bash
-git fetch origin next:master
-git diff master 
-git merge master
+git push -u Docs master         #这里的Docs 就是上面 起的别名； -u 表示：以后操作，默认的仓库为Docs，默认关联的分支为master
 ```
+　　使用上面的-u 以后，后续很多操作都可以简化，如下：
+```bash
+git push 命令： 
+　　格式：$ git push <远程主机名> <本地分支名>:<远程分支名>  
+　　举例：$ git push Docs master:master                   # 将本地master分支推送到远程仓库Docs的master分支 
+
+　　# 如果省略本地分支名，则表示删除指定的远程分支，因为这等同于推送一个空的本地分支到远程分支。例如：
+　　$ git push Docs :master
+　　# 等同于
+　　$ git push Docs --delete master
+
+　　# 如果当前分支与远程分支之间存在追踪关系，则本地分支和远程分支都可以省略。（ 即使用 git push -u 关联的那个）
+　　$ git push Docs
+　　# 如果当前分支只有一个追踪分支，那么主机名都可以省略。
+　　$ git push
+```
+　　一旦远程主机的版本库有了更新(Git术语叫做commit)，需要先将这些更新取回本地，否则，在将本地提交到远程仓库时会报错。这时就要用到git fetch或者git pull命令。
+```bash
+git pull 命令： 
+　　格式：$ git pull <远程主机名> <远程分支名>:<本地分支名>  
+　　举例：$ git pull Docs master:master                   # 将远程仓库Docs的master分支克隆到本地master分支
+
+　　# 如果与当前本地分支，则:后可以省略：
+　　$ git push Docs master                                # 取回Docs/master分支，合并到当前本地分支
+
+　　# 在某些场合，Git会自动在本地分支与远程分支之间，建立一种追踪关系(tracking)。
+　　# 比如，在git clone的时候，所有本地分支默认与远程主机的同名分支，建立追踪关系，也就是说，本地的master分支自动”追踪”Docs/master分支。
+　　$ git branch --set-upstream master Docs/next
+
+　　# 如果当前分支与远程分支存在追踪关系，git pull就可以省略远程分支名。
+　　$ git pull origin
+
+　　# 如果当前分支只有一个追踪分支，连远程主机名都可以省略。
+　　$ git pull
+
+git fetch 命令：
+　　# 将某个远程主机的更新（所有分支），全部取回本地
+　　$ git fetch <远程主机名>
+
+　　# 如果只想取回特定分支的更新，可以指定分支名
+　　$ git fetch <远程主机名> <分支名>
+
+　　# 注意：fetch后，内容并没有真正保存，修改手动合并
+　　$ git merge origin/master
+
+　　# 也可以在它的基础上，使用git checkout命令创建一个新的分支
+　　$ git checkout -b newBrach Docs/master
+```
+　　**所取回的更新，在本地主机上要用 ”远程主机名/分支名” 的形式读取。比如Docs主机的master，就要用Docsmaster读取。**
+
+　　**git pull 等效于 git fetch + git merge**
 
 ## 附录
 　　以下是几个比较好的Git学习网站，特此记录以下
