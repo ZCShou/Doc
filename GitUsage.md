@@ -97,11 +97,11 @@ $ git config --global push.default simple
 ### Git 查看日志
 　　使用 `git log` 命令列出历史提交记录如下:
 
-![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log.png)
+![git_log](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log.png)
 
 　　也可以使用 `git log --oneline` 命令列出历史提交记录的精简版，如下：
 
-![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log_oneline.png)
+![git_log_oneline](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log_oneline.png)
 
 　　使用 `git log --graph` 命令查看历史中什么时候出现了分支、合并
 ```bash
@@ -187,11 +187,15 @@ git fetch 命令：
 　　$ git merge origin/master
 
 　　# 也可以在它的基础上，使用git checkout命令创建一个新的分支
+　　# 所取回的更新，在本地主机上要用 ”远程主机名/分支名” 的形式读取。比如Docs主机的master，就要用Docsmaster读取。
 　　$ git checkout -b newBrach Docs/master
 ```
-　　**所取回的更新，在本地主机上要用 ”远程主机名/分支名” 的形式读取。比如Docs主机的master，就要用Docsmaster读取。**
 
-　　**git pull 等效于 git fetch + git merge**
+　　附一个在使用中遇到的问题
+<p align="center">
+  <img alt="pull ERROR" src="https://github.com/ZCShou/Docs/blob/master/images/PC-lint/pull_err.png">
+</p>
+
 
 ## 附录
 　　以下是几个比较好的Git学习网站，特此记录以下
