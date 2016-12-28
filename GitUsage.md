@@ -63,6 +63,12 @@ $ git config --global push.default simple
 * **暂存区**：英文叫stage, 或index。一般存放在"git目录"下的index文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。
 * **版本库**：工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。
 
+一般仓库中的文件可能存在于这三种状态：
+
+  * Untracked files → 文件未被跟踪；
+  * Changes to be committed → 文件已暂存，这是下次提交的内容；
+  * Changes bu not updated → 文件被修改，但并没有添加到暂存区。如果 commit 时没有带 -a 选项，这个状态下的文件不会被提交。
+
 　　下面这个图展示了工作区、版本库中的暂存区和版本库之间的关系：
 ![git process](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git-works.png)
 
@@ -70,34 +76,54 @@ $ git config --global push.default simple
 
 ## Git 本地仓库
 
-　　本地仓库相对比较简单，新建立一个文件夹，git bash到 新建的文件中，执行 `git init` 即可。这样，在当前目录下，回生成一个名为.git的隐藏文件夹，git的所有东西就存在该文件夹中。
+　　本地仓库相对比较简单，新建立一个文件夹，git bash到 新建的文件中，执行 `git init` 即可。这样，在当前目录下，回生成一个名为.git的隐藏文件夹，git的所有配置文件就存在该文件夹中。接下来就可以在此文件夹（仓库）中，增删改自己的文件了。
 
-## Git 基本操作
-### Git 新增文件
-　　使用 `git add` 命令将新文件提交到git，让git管理该文件:
+### Git 检查状态
+　　使用 `git status` 可以列出当前目录所有还没有被git管理的文件和被git管理且被修改但还未提交(git commit)的文件。
 ```bash
-格式：$ git add <参数>  文件名          # 文件名支持通配符
+格式：$ git status <参数>
+
+git status命令一般不用加参数，可能用到的参数如下：
+　　$ git status -s   # 将结果以简短的形式输出
+
+```
+### Git 新增文件
+　　使用 `git add` 命令要用于把我们要提交的文件的信息添加到索引库中。
+```bash
+格式：$ git add <参数>  <path>          # 文件名或者路径，支持通配符，多个文件可以用空格来隔开，省略<path>表示用 . （点表示当前目录）
 
 注意几个参数的区别：
-　　$ git add .   # 监控工作区的状态树，使用它会把工作时的所有变化提交到暂存区，包括文件内容修改(modified)以及新文件(new)，但不包括被删除的文件
-　　$ git add -u   # 仅监控已经被add的文件（即tracked file），他会将被修改的文件提交到暂存区。add -u 不会提交新文件（untracked file）
-　　$ git add -A   # 是上面两个功能的合集
+　　$ git add .     # 监控文件内容修改(modified)以及新文件(new)，但不包括被删除的文件
+　　$ git add -u    # 仅监控已经被add的文件（即tracked file），他会将被修改的文件提交到暂存区。add -u 不会提交新文件（untracked file）
+　　$ git add -A    # 是上面两个功能的合集，提交所有变化 等价于 git add *
+　　$ git add -i    # 交互式的方式进行添加
+
+　　$ git add -h    # 查看git add的帮助信息
+
 
 ```
 
 ### Git 提交修改
-　　使用 `git commit` 命令修改提交到Git:
+　　使用 `git commit` 命令提交的是暂存区里面的内容。
 ```bash
 格式：$ git commit <参数> <-F file/ -m "msg" ...>
 
 注意几个参数的区别：
-　　$ git commit -m    # 提交说明。不用-m参数的话，git将调到一个文本编译器（通常是vim）来让你输入提交的描述信息
+　　$ git commit -m   # 提交说明。不用-m参数的话，git将调到一个文本编译器（通常是vim）来让你输入提交的描述信息
 　　$ git commit -a   # -a 选项可只将所有被修改或者已删除的且已经被git管理的文档提交倒仓库中。如果只是修改或者删除了已被Git 管理的文档，是没必要使用git add 命令的。
+　　$ git commit --amend  #用来修复最近一次commit. 可以让你合并你缓存区的修改和上一次commit, 而不是多出提交一个新的快照. 还可以用来编辑上一次的commit描述。注意：生成的commit是一个全新的commit, 之前的老的commit会从项目历史中被删除
+    例如：忘记了add一个文件：先 git add 忘记的文件，然后使用 git commit --amend --no-edit # 描述会是上一次commit的描述, --no-edit能让我们修复commit,而且不要修改commit描述.
+    再例如：又或者我们发现在提交时忘记使用 -a 选项，导致 Changes bu not updated 中的内容没有被提交：直接使用 git commit --amend -a 即可
 ```
 ### Git 查看日志
 　　使用 `git log` 命令列出历史提交记录如下:
 
 ![git_log](https://github.com/ZCShou/Docs/blob/master/images/GitUsage/git_log.png)
+
+　　-p 选项展开显示每次提交的内容差异，用 -2 则仅显示最近的两次更新
+```bash
+git log -p -2
+```
 
 　　也可以使用 `git log --oneline` 命令列出历史提交记录的精简版，如下：
 
@@ -117,27 +143,51 @@ git log --author=Linus --oneline -5
 ```bash
 git log --oneline --before={3.weeks.ago} --after={2010-04-18} --no-merges
 ```
+### Git 回退
+　　git reset命令将当前的分支重设（reset）到指定的<commit>或者HEAD（默认，如果不显示指定commit，默认是HEAD，即最新的一次提交）
+```bash
+格式：$ git reset [--hard|soft|mixed|merge|keep] [<commit>或HEAD]
+```
+　　并且根据[mode]有可能更新index和working directory。mode的取值可以是hard、soft、mixed、merged、keep。下面来详细说明每种模式的意义和效果。
+
+　　A). --hard：重设（reset） index和working directory，自从<commit>以来在working directory中的任何改变都被丢弃，并把HEAD指向<commit>。
+
+　　B). --soft：index和working directory中的内容不作任何改变，仅仅把HEAD指向<commit>。这个模式的效果是，执行完毕后，自从<commit>以来的所有改变都会显示在git status的"Changes to be committed"中。 
+
+　　C). --mixed：仅reset index，但是不reset working directory。这个模式是默认模式，即当不显示告知git reset模式时，会使用mixed模式。这个模式的效果是，working directory中文件的修改都会被保留，不会丢弃，但是也不会被标记成"Changes to be committed"，但是会打出什么还未被更新的报告。
 
 ## Git 使用远程仓库
 
-　　1. 将本地仓库(有无内容均可)与已有的一个***空的***远程仓库进行关联。可以直接执行以下命令：
+　　0. 远程操作的第一步，通常是从远程主机克隆一个版本库
 ```bash
-git remote add [shortname] [url]            # shortname 为远程仓库的简称，后续命令可以直接使用该简称，默认为origin
+$ git clone <版本库的网址> <本地目录名>            # 省略本地名是，默认采用与远程仓库相同的名字
 # 例如：
-git remote add Docs git@github.com:ZCShou/Docs.git           # Docs 为远程仓库git@github.com:ZCShou/Docs.git的简称，
+$ git clone git@github.com:ZCShou/Docs.git Docs          # 会在本地当前目录下建立Docs
 ```
-　　在关联之后，可以使用 `git remote` 进行查看当前关联的远程仓库
+
+　　1. 将本地仓库远程仓库进行关联。可以直接执行以下命令：
+```bash
+$ git remote add [shortname] [url]            # shortname 为远程仓库的简称，后续命令可以直接使用该简称，默认为origin
+# 例如：
+$ git remote add Docs git@github.com:ZCShou/Docs.git           # Docs 为远程仓库git@github.com:ZCShou/Docs.git的简称
+```
+　　可以使用以下命令查看或修改与远程仓库的关联
 
 ```bash
-$ git remote
+$ git remote  # 使用 `git remote` 进行查看当前关联的远程仓库
 Docs
-$ git remote -v
+
+$ git remote -v # 列出详细信息，在每一个名字后面列出其远程url
 Docs    git@github.com:ZCShou/Docs.git (fetch)
 Docs    git@github.com:ZCShou/Docs.git (push)
-```
-　　2. 如果我们已有不空的远程仓库，或者说，想要直接获取别人的仓库
 
-　　接下来，就可以把本地库的所有内容推送到远程库上（将本地的master分支推送到Docs仓库）：
+$ git remote rm <主机名> # 删除与指定远程主机的关联
+
+$ git remote rename <原主机名> <新主机名> # 用于远程主机的改名
+
+```
+　　2. 接下来，就可以把本地库的所有内容推送到远程库上（每次push前确保本地已commit）：
+　　
 ```bash
 git push -u Docs master         #这里的Docs 就是上面 起的别名； -u 表示：以后操作，默认的仓库为Docs，默认关联的分支为master
 ```
@@ -157,7 +207,7 @@ git push 命令：
 　　# 如果当前分支只有一个追踪分支，那么主机名都可以省略。
 　　$ git push
 ```
-　　一旦远程主机的版本库有了更新(Git术语叫做commit)，需要先将这些更新取回本地，否则，在将本地提交到远程仓库时会报错。这时就要用到git fetch或者git pull命令。
+　　3. 一旦远程主机的版本库有了更新(Git术语叫做commit)，需要先将这些更新取回本地，否则，在将本地提交到远程仓库时会报错。这时就要用到git fetch或者git pull命令。
 ```bash
 git pull 命令： 
 　　格式：$ git pull <远程主机名> <远程分支名>:<本地分支名>  
@@ -190,6 +240,7 @@ git fetch 命令：
 　　# 所取回的更新，在本地主机上要用 ”远程主机名/分支名” 的形式读取。比如Docs主机的master，就要用Docsmaster读取。
 　　$ git checkout -b newBrach Docs/master
 ```
+　　3. 对于远程仓库的push和pull 也可以使用 git reset命令
 
 　　附一个在使用中遇到的问题
 <p align="center">
